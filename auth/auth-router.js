@@ -4,11 +4,12 @@ const router = require('express').Router();
 
 const Users = require('../users/users-model');
 
+const reqauth = require('../auth/requires-auth-middleware')
 router.post('/register', (req, res) => {
   let userInformation = req.body;
 
-  bcrypt.hash(userInformation.password, 12, (err, hashedPasswod) => {
-    userInformation.password = hashedPasswod;
+  bcrypt.hash(userInformation.password, 12, (err, hashedPassword) => {
+    userInformation.password = hashedPassword;
 
     Users.add(userInformation)
       .then(saved => {
@@ -20,7 +21,7 @@ router.post('/register', (req, res) => {
   });
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', reqauth, (req, res) => {
   let { username, password } = req.body;
 
   Users.findBy({ username })
